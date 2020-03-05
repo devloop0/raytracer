@@ -9,11 +9,12 @@
 namespace raytracer {
 
 Scene::Scene(const std::vector<Vec3f>& ls,
+	std::vector<std::unique_ptr<SceneObject>> os,
 	const Vec3f& e,
 	const Vec3f& v,
 	const std::pair<size_t, size_t>& sd,
 	const std::pair<float, float>& nf) :
-	lights_(ls), eye_(e), view_(v), screen_dims_(sd), near_far_(nf) {
+	lights_(ls), objects_(std::move(os)), eye_(e), view_(v), screen_dims_(sd), near_far_(nf) {
 
 }
 
@@ -22,7 +23,7 @@ Scene::~Scene() {
 }
 
 Vec3f Scene::light(size_t i) const {
-	assert (0 <= i && i <= lights_.size());
+	assert (0 <= i && i < lights_.size());
 	return lights_[i];
 }
 
@@ -52,6 +53,15 @@ size_t Scene::screen_width() const {
 
 size_t Scene::screen_height() const {
 	return screen_dims_.second;
+}
+
+const SceneObject* Scene::object(size_t i) const {
+	assert(0 <= i && i < objects_.size());
+	return objects_[i].get();
+}
+
+const std::vector<std::unique_ptr<SceneObject>>& Scene::objects() const {
+	return objects_;
 }
 
 } // namespace raytracer

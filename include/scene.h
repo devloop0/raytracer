@@ -3,14 +3,17 @@
 
 #include <utility>
 #include <vector>
+#include <memory>
 
 #include "vec3.h"
+#include "scene_object.h"
 
 namespace raytracer {
 
 class Scene {
 public:
 	Scene(const std::vector<Vec3f>& ls,
+		std::vector<std::unique_ptr<SceneObject>> os,
 		const Vec3f& e,
 		const Vec3f& v,
 		const std::pair<size_t, size_t>& sd,
@@ -34,8 +37,13 @@ public:
 
 	size_t screen_height() const;
 
+	const SceneObject* object(size_t i) const;
+
+	const std::vector<std::unique_ptr<SceneObject>>& objects() const;
+
 private:
 	std::vector<Vec3f> lights_;
+	std::vector<std::unique_ptr<SceneObject>> objects_;
 	Vec3f eye_;
 	Vec3f view_;
 	std::pair<size_t, size_t> screen_dims_;
