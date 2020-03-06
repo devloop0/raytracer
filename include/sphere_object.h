@@ -22,7 +22,7 @@ public:
 
 	MaterialType material_type() const override;
 
-	std::optional<float> intersect(const Ray& r) const override;
+	std::optional<std::vector<float>> intersect(const Ray& r) const override;
 
 	Rgb color(const Scene& s, const Ray& r, size_t bounce) const override;
 

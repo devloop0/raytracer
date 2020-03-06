@@ -7,6 +7,7 @@
 
 #include "vec3.h"
 #include "scene_object.h"
+#include "image.h"
 
 namespace raytracer {
 
@@ -37,16 +38,18 @@ public:
 
 	size_t screen_height() const;
 
-	const SceneObject* object(size_t i) const;
+	const std::unique_ptr<SceneObject>& object(size_t i) const;
 
 	const std::vector<std::unique_ptr<SceneObject>>& objects() const;
 
+	Image& image();
 private:
 	std::vector<Vec3f> lights_;
 	std::vector<std::unique_ptr<SceneObject>> objects_;
 	Vec3f eye_;
 	Vec3f view_;
 	std::pair<size_t, size_t> screen_dims_;
+	Image image_;
 	std::pair<float, float> near_far_;
 };
 

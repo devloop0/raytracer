@@ -4,6 +4,7 @@
 #include <algorithm>
 
 #include "vec3.h"
+#include "trace.h"
 
 namespace raytracer {
 
@@ -28,7 +29,7 @@ MaterialType SphereObject::material_type() const {
 	return material_type_;
 }
 
-std::optional<float> SphereObject::intersect(const Ray& r) const {
+std::optional<std::vector<float>> SphereObject::intersect(const Ray& r) const {
 	float a = r.d.dot(r.d),
 	      b = 2 * ((r.o - position_).dot(r.d)),
 	      c = (r.o - position_).dot(r.o - position_) - (radius_ * radius_);
@@ -39,11 +40,13 @@ std::optional<float> SphereObject::intersect(const Ray& r) const {
 
 	float t1 = (-b + dsq) / (2 * a),
 	      t2 = (-b - dsq) / (2 * a);
-	float t = std::min(t1, t2);
-	if (t < 0) t = std::max(t1, t2);
+	float tmin = std::min(t1, t2),
+	      tmax = std::max(t1, t2);
 
-	if (t < 0) return std::nullopt;
-	return t;
+	if (tmax < 0) return std::nullopt;
+	if (tmin < 0) return std::vector<float>{ tmax };
+	else if (tmin == tmax) return std::vector<float>{ tmax };
+	else return std::vector<float>{tmin, tmax};
 }
 
 Rgb SphereObject::color(const Scene& s, const Ray& r, size_t bounce) const {

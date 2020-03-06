@@ -5,6 +5,8 @@
 #include <cassert>
 
 #include "vec3.h"
+#include "image.h"
+#include "scene_object.h"
 
 namespace raytracer {
 
@@ -14,7 +16,8 @@ Scene::Scene(const std::vector<Vec3f>& ls,
 	const Vec3f& v,
 	const std::pair<size_t, size_t>& sd,
 	const std::pair<float, float>& nf) :
-	lights_(ls), objects_(std::move(os)), eye_(e), view_(v), screen_dims_(sd), near_far_(nf) {
+	lights_(ls), objects_(std::move(os)), eye_(e), view_(v), screen_dims_(sd), near_far_(nf),
+	image_(Image(screen_width(), screen_height())) {
 
 }
 
@@ -55,13 +58,17 @@ size_t Scene::screen_height() const {
 	return screen_dims_.second;
 }
 
-const SceneObject* Scene::object(size_t i) const {
+const std::unique_ptr<SceneObject>& Scene::object(size_t i) const {
 	assert(0 <= i && i < objects_.size());
-	return objects_[i].get();
+	return objects_[i];
 }
 
 const std::vector<std::unique_ptr<SceneObject>>& Scene::objects() const {
 	return objects_;
+}
+
+Image& Scene::image() {
+	return image_;
 }
 
 } // namespace raytracer
