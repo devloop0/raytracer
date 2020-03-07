@@ -2,10 +2,12 @@
 #define TRACE_H
 
 #include "scene.h"
+#include "vec3.h"
 
 namespace raytracer {
 
-void trace(Scene& s, size_t bounce = 0);
+void render(Scene& s);
+Rgb trace(const Ray& r, Scene& s, size_t bounce = 0);
 
 } // namespace raytracer
 

@@ -24,9 +24,11 @@ public:
 
 	std::optional<std::vector<float>> intersect(const Ray& r) const override;
 
-	Rgb color(const Scene& s, const Ray& r, size_t bounce) const override;
+	Vec3f normal(const Vec3f& p) const override;
 
 	ObjectType object_type() const override;
+
+	Rgb diffuse_color() const override;
 
 private:
 	Vec3f position_;

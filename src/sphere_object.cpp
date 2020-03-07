@@ -49,13 +49,18 @@ std::optional<std::vector<float>> SphereObject::intersect(const Ray& r) const {
 	else return std::vector<float>{tmin, tmax};
 }
 
-Rgb SphereObject::color(const Scene& s, const Ray& r, size_t bounce) const {
-	// TODO
-	return Rgb(0, 0, 0);
-}
-
 ObjectType SphereObject::object_type() const {
 	return ObjectType::SPHERE;
+}
+
+Vec3f SphereObject::normal(const Vec3f& p) const {
+	Vec3f n = p - position_;
+	n.normalize();
+	return n;
+}
+
+Rgb SphereObject::diffuse_color() const {
+	return color_;
 }
 
 } // namespace raytracer

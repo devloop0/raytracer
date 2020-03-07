@@ -24,6 +24,7 @@ enum class ObjectType {
 class Scene;
 
 class SceneObject {
+public:
 	virtual BoundingBox bounding_box() const = 0;
 
 	virtual Vec3f position() const = 0;
@@ -32,9 +33,11 @@ class SceneObject {
 
 	virtual std::optional<std::vector<float>> intersect(const Ray& r) const = 0;
 
-	virtual Rgb color(const Scene& s, const Ray& r, size_t bounce) const = 0;
+	virtual Vec3f normal(const Vec3f& p) const = 0;
 
 	virtual ObjectType object_type() const;
+
+	virtual Rgb diffuse_color() const = 0;
 };
 
 } // namespace raytracer

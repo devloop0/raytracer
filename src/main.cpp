@@ -1,6 +1,7 @@
 #include <iostream>
 #include <optional>
 
+#include "trace.h"
 #include "image.h"
 #include "vec3.h"
 #include "ray.h"
@@ -10,6 +11,13 @@
 #include "scene_object.h"
 
 using namespace raytracer;
+
+// TODO:
+// 1. Reflection and refraction
+// 2. BVH
+// 3. Parallelize/Improve performance
+// 4. Triangle
+// 5. Soften shadows
 
 int main(int argc, char* argv[]) {
 	/* Ray r(
@@ -43,19 +51,21 @@ int main(int argc, char* argv[]) {
 		std::cout << std::endl;
 	}
 	else std::cout << "No intersection" << std::endl; */
+	std::vector<std::unique_ptr<SceneObject>> objects;
+	std::unique_ptr<SphereObject> s1 = std::make_unique<SphereObject>(Vec3f(0, 0, -23), 1, Rgb(1, 0, 0), MaterialType::DIFFUSE);
+	std::unique_ptr<SphereObject> s2 = std::make_unique<SphereObject>(Vec3f(-1, 1, -19), 1, Rgb(0, 0, 1), MaterialType::DIFFUSE);
+	objects.push_back(std::move(s1));
+	objects.push_back(std::move(s2));
 
-	Image i(400, 300);
-	for (size_t j = 0; j < i.height(); j++) {
-		for (size_t k = 0; k < i.width(); k++) {
-			i(j, k) = Rgb(1, 0, 0);
-		}
-	}
-	for (size_t j = 100; j < 200; j++) {
-		for (size_t k = 100; k < 200; k++) {
-			i(j, k) = Rgb(0, 1, 0);
-		}
-	}
-	i.write("test.ppm");
+	Scene s(std::vector<Light>{
+		Light(Vec3f(-20, 0, 30), Rgb(1, 1, 1))
+	},
+		std::move(objects),
+		Vec3f(0, 0, 0),
+				std::make_pair(640, 480), 30
+	);
+	render(s);
+	s.image().write("output.ppm");
 
 	return 0;
 }

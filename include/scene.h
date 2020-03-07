@@ -8,31 +8,27 @@
 #include "vec3.h"
 #include "scene_object.h"
 #include "image.h"
+#include "light.h"
 
 namespace raytracer {
 
 class Scene {
 public:
-	Scene(const std::vector<Vec3f>& ls,
+	Scene(const std::vector<Light>& ls,
 		std::vector<std::unique_ptr<SceneObject>> os,
 		const Vec3f& e,
-		const Vec3f& v,
 		const std::pair<size_t, size_t>& sd,
-		const std::pair<float, float>& nf);
+		float f);
 
 	~Scene();
 
-	Vec3f light(size_t i) const;
+	Light light(size_t i) const;
 
-	std::vector<Vec3f> lights() const;
+	std::vector<Light> lights() const;
 
 	Vec3f eye() const;
 
-	Vec3f view() const;
-
-	float near() const;
-
-	float far() const;
+	float fov() const;
 
 	size_t screen_width() const;
 
@@ -44,13 +40,13 @@ public:
 
 	Image& image();
 private:
-	std::vector<Vec3f> lights_;
+	std::vector<Light> lights_;
 	std::vector<std::unique_ptr<SceneObject>> objects_;
 	Vec3f eye_;
 	Vec3f view_;
 	std::pair<size_t, size_t> screen_dims_;
 	Image image_;
-	std::pair<float, float> near_far_;
+	float fov_;
 };
 
 } // namespace raytracer

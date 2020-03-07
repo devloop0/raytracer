@@ -10,6 +10,8 @@ set(SOURCES
 	src/sphere_object.cpp
 	src/scene_object.cpp
 	src/image.cpp
+	src/light.cpp
+	src/trace.cpp
 	src/main.cpp)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=c++17")
