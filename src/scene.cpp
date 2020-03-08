@@ -14,9 +14,13 @@ Scene::Scene(const std::vector<Light>& ls,
 	std::vector<std::unique_ptr<SceneObject>> os,
 	const Vec3f& e,
 	const std::pair<size_t, size_t>& sd,
-	float f) :
+	float f,
+	const Rgb& bg,
+	size_t m,
+	float b) :
 	lights_(ls), objects_(std::move(os)), eye_(e), screen_dims_(sd), fov_(f),
-	image_(Image(screen_width(), screen_height())) {
+	image_(Image(screen_width(), screen_height())), max_bounce_(m), bias_(b),
+	background_color_(bg) {
 
 }
 
@@ -60,6 +64,18 @@ const std::vector<std::unique_ptr<SceneObject>>& Scene::objects() const {
 
 Image& Scene::image() {
 	return image_;
+}
+
+size_t Scene::max_bounce() const {
+	return max_bounce_;
+}
+
+float Scene::bias() const {
+	return bias_;
+}
+
+Rgb Scene::background_color() const {
+	return background_color_;
 }
 
 } // namespace raytracer

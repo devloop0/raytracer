@@ -1,9 +1,25 @@
 #include "trace.h"
 
+#include <optional>
 #include <cmath>
 #include <algorithm>
 
+#include "vec3.h"
+
 namespace raytracer {
+
+namespace {
+
+Vec3f refract(const Vec3f& I, const Vec3f& N, float r, bool inside) {
+	float eta = inside ? r : 1 / r,
+	      angle = -N.dot(I),
+	      k = 1 - eta * eta * (1 - angle * angle);
+	Vec3f refracted = eta * I + (eta * angle - std::sqrt(k)) * N;
+	refracted.normalize();
+	return refracted;
+}
+
+} // namespace
 
 void render(Scene& s) {
 	float width_step = 1.0f / static_cast<float>(s.screen_width()),
@@ -39,39 +55,71 @@ Rgb trace(const Ray& r, Scene& s, size_t bounce) {
 	}
 
 	// No intersection
-	if (closest_object == nullptr) return Rgb(1, 1, 1);
+	bool inside = false;
+	if (closest_object == nullptr) {
+		if (bounce == 0)
+			return s.background_color();
+		else
+			return Rgb(0, 0, 0);
+	}
 	Vec3f hit_position = r.o + closest_distance * r.d;
 	Vec3f surface_normal = closest_object->normal(hit_position);
-	if (r.o.dot(surface_normal) > 0) surface_normal = 0.0f - surface_normal;
+	if (r.d.dot(surface_normal) > 0) {
+		surface_normal = -surface_normal;
+		inside = true;
+	}
 
 	Rgb color = Vec3f(0, 0, 0);
-	if (closest_object->material_type() == MaterialType::DIFFUSE) {
-		for (const auto& l : s.lights()) {
-			// avoid back ray hitting the object itself by nudging. 
-			Vec3f nudged = hit_position + surface_normal * 0.0001; 
-			Vec3f light_direction = l.position - nudged;
-			light_direction.normalize();
-			// now check if intersections in light direction
-			Ray back(
-				nudged,
-				light_direction
-			);
-			float shadow = 0;
+	Vec3f nudged = hit_position + surface_normal * s.bias(); 
+	const ColorProperties& color_properties = closest_object->color_properties();
+	for (const auto& l : s.lights()) {
+		// avoid back ray hitting the object itself by nudging. 
+		Vec3f light_direction = l.position - nudged;
+		light_direction.normalize();
+		// now check if intersections in light direction
+		Ray back(
+			nudged,
+			light_direction
+		);
+		float shadow = 0;
 
-			// TODO: BVH
-			for (const std::unique_ptr<SceneObject>& so : s.objects()) {
-				if (so->intersect(back)) {
-					// occluded, so in shadow
-					shadow = 1;
-					break;
-				}
+		// TODO: BVH
+		for (const std::unique_ptr<SceneObject>& so : s.objects()) {
+			if (so->intersect(back)) {
+				// occluded, so in shadow
+				shadow = 1;
+				break;
 			}
-			color += l.color * (1 - shadow) * closest_object->diffuse_color() * std::max(0.0f, surface_normal.dot(light_direction));
+		}
+
+		color += l.color * l.intensity * (1 - shadow) * color_properties.diffuse_color
+			* std::max(0.0f, surface_normal.dot(light_direction));
+	}
+
+	if ((color_properties.reflectivity > 0 || color_properties.transparency > 0) && bounce < s.max_bounce()) {
+		Vec3f rfl = reflect(r.d, surface_normal);
+		rfl += Vec3f::random() * color_properties.glossiness;
+		rfl.normalize();
+		Ray reflected(nudged, rfl);
+		Rgb reflection_color = trace(reflected, s, bounce + 1) * color_properties.reflectivity;
+
+		if (color_properties.transparency > 0) {
+			float nit = inside ? 1.1 : (1 / 1.1),
+				cosi = -surface_normal.dot(r.d),
+				k = 1 - nit * nit * (1 - cosi * cosi);
+			Vec3f rfr = r.d * nit + surface_normal * (nit * cosi - std::sqrt(k));
+			rfr += Vec3f::random() * color_properties.transparent_glossiness;
+			rfr.normalize();
+
+			Ray refracted(hit_position - surface_normal * s.bias(), rfr);
+			Rgb refraction_color = trace(refracted, s, bounce + 1);
+			color = (reflection_color * color_properties.reflectivity) + (refraction_color * color_properties.transparency);
+		}
+		else {
+			color += reflection_color * color_properties.reflectivity;
 		}
 	}
-	else {
-		// TODO: Handle reflection and refraction
-	}
+
 	return color;
 }
 

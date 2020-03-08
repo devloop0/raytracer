@@ -6,12 +6,13 @@
 namespace raytracer {
 
 struct Light {
-	Light(const Vec3f& p, const Rgb& c);
+	Light(const Vec3f& p, const Rgb& c, float i);
 
 	~Light();
 
 	Vec3f position;
 	Rgb color;
+	float intensity;
 };
 
 } // namespace raytracer

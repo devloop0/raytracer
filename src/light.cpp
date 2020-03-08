@@ -4,7 +4,7 @@
 
 namespace raytracer {
 
-Light::Light(const Vec3f& p, const Rgb& c) : position(p), color(c) {
+Light::Light(const Vec3f& p, const Rgb& c, float i) : position(p), color(c), intensity(i) {
 
 }
 

@@ -18,7 +18,10 @@ public:
 		std::vector<std::unique_ptr<SceneObject>> os,
 		const Vec3f& e,
 		const std::pair<size_t, size_t>& sd,
-		float f);
+		float f,
+		const Rgb& bg = Rgb(1, 1, 1),
+		size_t m = 5,
+		float b = 0.001);
 
 	~Scene();
 
@@ -39,6 +42,12 @@ public:
 	const std::vector<std::unique_ptr<SceneObject>>& objects() const;
 
 	Image& image();
+
+	size_t max_bounce() const;
+
+	float bias() const;
+
+	Rgb background_color() const;
 private:
 	std::vector<Light> lights_;
 	std::vector<std::unique_ptr<SceneObject>> objects_;
@@ -47,6 +56,9 @@ private:
 	std::pair<size_t, size_t> screen_dims_;
 	Image image_;
 	float fov_;
+	size_t max_bounce_;
+	float bias_;
+	Rgb background_color_;
 };
 
 } // namespace raytracer

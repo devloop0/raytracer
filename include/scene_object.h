@@ -10,18 +10,19 @@
 
 namespace raytracer {
 
-enum class MaterialType {
-	DIFFUSE,
-	REFLECTIVE,
-	REFRACTIVE
-};
-
 enum class ObjectType {
-	NONE,
-	SPHERE
+	SPHERE, TRIANGLE
 };
 
 class Scene;
+
+struct ColorProperties {
+	Rgb diffuse_color = Rgb(0, 0, 0);
+	float reflectivity = 0;
+	float transparency = 0;
+	float glossiness = 0;
+	float transparent_glossiness = 0;
+};
 
 class SceneObject {
 public:
@@ -29,15 +30,13 @@ public:
 
 	virtual Vec3f position() const = 0;
 
-	virtual MaterialType material_type() const = 0;
+	virtual ObjectType object_type() const = 0;
 
 	virtual std::optional<std::vector<float>> intersect(const Ray& r) const = 0;
 
 	virtual Vec3f normal(const Vec3f& p) const = 0;
 
-	virtual ObjectType object_type() const;
-
-	virtual Rgb diffuse_color() const = 0;
+	virtual const ColorProperties color_properties() const = 0;
 };
 
 } // namespace raytracer

@@ -1,5 +1,5 @@
-#ifndef SPHERE_OBJECT_H
-#define SPHERE_OBJECT_H
+#ifndef TRIANGLE_OBJECT_H
+#define TRIANGLE_OBJECT_H
 
 #include <optional>
 
@@ -10,11 +10,11 @@
 
 namespace raytracer {
 
-class SphereObject : public SceneObject {
+class TriangleObject : public SceneObject {
 public:
-	SphereObject(const Vec3f& p, float r, ColorProperties cp);
+	TriangleObject(const Vec3f& one, const Vec3f& two, const Vec3f& three, const ColorProperties& cp);
 
-	~SphereObject();
+	~TriangleObject();
 
 	BoundingBox bounding_box() const override;
 
@@ -29,11 +29,10 @@ public:
 	const ColorProperties color_properties() const override;
 
 private:
-	Vec3f position_;
-	float radius_;
+	Vec3f vertexOne_, vertexTwo_, vertexThree_, position_;
 	ColorProperties color_properties_;
 };
 
 } // namespace raytracer
 
-#endif // SPHERE_OBJECT_H
+#endif // TRIANGLE_OBJECT_H

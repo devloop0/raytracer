@@ -8,8 +8,8 @@
 
 namespace raytracer {
 
-SphereObject::SphereObject(const Vec3f& p, float r, const Rgb& c, MaterialType m) :
-	position_(p), radius_(r), color_(c), material_type_(m) {
+SphereObject::SphereObject(const Vec3f& p, float r, ColorProperties cp) :
+	position_(p), radius_(r), color_properties_(cp) {
 
 }
 
@@ -23,10 +23,6 @@ BoundingBox SphereObject::bounding_box() const {
 
 Vec3f SphereObject::position() const {
 	return position_;
-}
-
-MaterialType SphereObject::material_type() const {
-	return material_type_;
 }
 
 std::optional<std::vector<float>> SphereObject::intersect(const Ray& r) const {
@@ -59,8 +55,8 @@ Vec3f SphereObject::normal(const Vec3f& p) const {
 	return n;
 }
 
-Rgb SphereObject::diffuse_color() const {
-	return color_;
+const ColorProperties SphereObject::color_properties() const {
+	return color_properties_;
 }
 
 } // namespace raytracer

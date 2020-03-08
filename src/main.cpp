@@ -2,6 +2,7 @@
 #include <optional>
 
 #include "trace.h"
+#include "triangle_object.h"
 #include "image.h"
 #include "vec3.h"
 #include "ray.h"
@@ -20,49 +21,26 @@ using namespace raytracer;
 // 5. Soften shadows
 
 int main(int argc, char* argv[]) {
-	/* Ray r(
-		Vec3f(1, 1, 1),
-		Vec3f(-1, -1, -1));
-	BoundingBox bb(
-		Vec3f(-2, -2, -1),
-		Vec3f(-2, -2, 2));
-	std::optional<float> o = bb.intersect(r);*/
-
-	/* Ray r(
-		Vec3f(1, 1, 1),
-		Vec3f(-1, -1, -1));
-	SphereObject s(Vec3f(-1, -1, -1), std::sqrt(3),
-		Rgb(0, 0, 0), MaterialType::DIFFUSE); */
-	/* Ray r(
-		Vec3f(1, 0, 0),
-		Vec3f(-1, 0, 0));
-	SphereObject s(Vec3f(0, 0, -1), 1, Rgb(0, 0, 0), MaterialType::DIFFUSE); */
-	/* Ray r(
-		Vec3f(1, 0, 0),
-		Vec3f(-1, 0, 0));
-	SphereObject s(
-		Vec3f(0, 0, -2),
-		1, Rgb(0, 0, 0), MaterialType::DIFFUSE);
-	std::optional<std::vector<float>> o = s.intersect(r);
-	
-	if (o) {
-		std::cout << "Intersection point(s): ";
-		for (const auto& f : *o) std::cout << f << " ";
-		std::cout << std::endl;
-	}
-	else std::cout << "No intersection" << std::endl; */
 	std::vector<std::unique_ptr<SceneObject>> objects;
-	std::unique_ptr<SphereObject> s1 = std::make_unique<SphereObject>(Vec3f(0, 0, -23), 1, Rgb(1, 0, 0), MaterialType::DIFFUSE);
-	std::unique_ptr<SphereObject> s2 = std::make_unique<SphereObject>(Vec3f(-1, 1, -19), 1, Rgb(0, 0, 1), MaterialType::DIFFUSE);
+	/* std::unique_ptr<SphereObject> s1 = std::make_unique<SphereObject>(Vec3f(0, 1, -20),
+		1, ColorProperties{ .diffuse_color = Rgb(0.502, 0.502, 0.502), .reflectivity = 0.5 });
+	std::unique_ptr<SphereObject> s2 = std::make_unique<SphereObject>(Vec3f(0, -100, -20),
+		100, ColorProperties{ .diffuse_color = Rgb(1, 0, 0) });
 	objects.push_back(std::move(s1));
-	objects.push_back(std::move(s2));
+	objects.push_back(std::move(s2)); */
+	std::unique_ptr<TriangleObject> t1 = std::make_unique<TriangleObject>(Vec3f(-10, 0, -20), Vec3f(10, 0, -20), Vec3f(-10, 0, -10),
+		ColorProperties{ .diffuse_color = Rgb(1, 0, 0) });
+	/* std::unique_ptr<TriangleObject> t2 = std::make_unique<TriangleObject>(Vec3f(-100, 0, -100), Vec3f(100, 0, -100), Vec3f(100, 0, 0),
+		ColorProperties{ .diffuse_color = Rgb(0, 1, 0) }); */
+	objects.push_back(std::move(t1));
+	// objects.push_back(std::move(t2));
 
 	Scene s(std::vector<Light>{
-		Light(Vec3f(-20, 0, 30), Rgb(1, 1, 1))
-	},
+			Light(Vec3f(-20, 20, 30), Rgb(1, 1, 1), 1)
+		},
 		std::move(objects),
-		Vec3f(0, 0, 0),
-				std::make_pair(640, 480), 30
+		Vec3f(0, 3, 0),
+		std::make_pair(1000, 800), 30
 	);
 	render(s);
 	s.image().write("output.ppm");

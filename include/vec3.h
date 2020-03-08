@@ -19,6 +19,16 @@ template<class T> struct Vec3 {
 
 	}
 
+	static Vec3<T> random() {
+		Vec3<T> t(
+			((double) rand()) / RAND_MAX,
+			((double) rand()) / RAND_MAX,
+			((double) rand()) / RAND_MAX
+		);
+		t.normalize();
+		return t;
+	}
+
 	Vec3<T> operator*(const Vec3<T>& other) const {
 		return Vec3<T>(
 			x * other.x,
@@ -151,6 +161,14 @@ template<class T> struct Vec3 {
 			x * other.y - y * other.x);
 	}
 
+	Vec3<T> operator-() const {
+		return Vec3<T>(-x, -y, -z);
+	}
+
+	Vec3<T> operator+() const {
+		return Vec3<T>(+x, +y, +z);
+	}
+
 	union {
 		T x;
 		T r;
@@ -201,6 +219,12 @@ using Rgb = Vec3<float>;
 template<class T> std::ostream& operator<<(std::ostream& os, const Vec3<T>& v) {
 	os << "[" << v.x << ", " << v.y << ", " << v.z << "]";
 	return os;
+}
+
+template<class T> Vec3<T> reflect(const Vec3<T>& I, const Vec3<T>& N) {
+	Vec3f n = I - 2 * I.dot(N) * N;
+	n.normalize();
+	return n;
 }
 
 } // namespace raytracer
