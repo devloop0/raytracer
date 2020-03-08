@@ -8,19 +8,6 @@
 
 namespace raytracer {
 
-namespace {
-
-Vec3f refract(const Vec3f& I, const Vec3f& N, float r, bool inside) {
-	float eta = inside ? r : 1 / r,
-	      angle = -N.dot(I),
-	      k = 1 - eta * eta * (1 - angle * angle);
-	Vec3f refracted = eta * I + (eta * angle - std::sqrt(k)) * N;
-	refracted.normalize();
-	return refracted;
-}
-
-} // namespace
-
 void render(Scene& s) {
 	float width_step = 1.0f / static_cast<float>(s.screen_width()),
 		height_step = 1.0f / static_cast<float>(s.screen_height()),
@@ -92,9 +79,14 @@ Rgb trace(const Ray& r, Scene& s, size_t bounce) {
 			}
 		}
 
-		color += l.color * l.intensity * (1 - shadow) * color_properties.diffuse_color
-			* std::max(0.0f, surface_normal.dot(light_direction));
+		if (closest_object->object_type() == ObjectType::SPHERE) {
+			color += l.color * l.intensity * (1 - shadow) * color_properties.diffuse_color
+				* std::max(0.0f, surface_normal.dot(light_direction));
+		}
+		else
+			color += l.color * l.intensity * (1 - shadow) * color_properties.diffuse_color;
 	}
+	color /= static_cast<float>(s.lights().size());
 
 	if ((color_properties.reflectivity > 0 || color_properties.transparency > 0) && bounce < s.max_bounce()) {
 		Vec3f rfl = reflect(r.d, surface_normal);
@@ -104,8 +96,10 @@ Rgb trace(const Ray& r, Scene& s, size_t bounce) {
 		Rgb reflection_color = trace(reflected, s, bounce + 1) * color_properties.reflectivity;
 
 		if (color_properties.transparency > 0) {
-			float nit = inside ? 1.1 : (1 / 1.1),
-				cosi = -surface_normal.dot(r.d),
+			float ni = 1.0, nt = 1.1, nit = ni / nt;
+			if (inside) nit = 1 / nit;
+			
+			float cosi = -surface_normal.dot(r.d),
 				k = 1 - nit * nit * (1 - cosi * cosi);
 			Vec3f rfr = r.d * nit + surface_normal * (nit * cosi - std::sqrt(k));
 			rfr += Vec3f::random() * color_properties.transparent_glossiness;
@@ -113,7 +107,8 @@ Rgb trace(const Ray& r, Scene& s, size_t bounce) {
 
 			Ray refracted(hit_position - surface_normal * s.bias(), rfr);
 			Rgb refraction_color = trace(refracted, s, bounce + 1);
-			color = (reflection_color * color_properties.reflectivity) + (refraction_color * color_properties.transparency);
+			color = ((reflection_color * color_properties.reflectivity) + (refraction_color * color_properties.transparency
+				+ 0 * (1 - color_properties.transparency) * color_properties.diffuse_color));
 		}
 		else {
 			color += reflection_color * color_properties.reflectivity;

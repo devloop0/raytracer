@@ -1,6 +1,8 @@
 #ifndef LIGHT_H
 #define LIGHT_H
 
+#include <vector>
+
 #include "vec3.h"
 
 namespace raytracer {
@@ -14,6 +16,9 @@ struct Light {
 	Rgb color;
 	float intensity;
 };
+
+std::vector<Light> generate_area_light(const Light& center_light,
+	float width, float height, float spacing = 0.5);
 
 } // namespace raytracer
 

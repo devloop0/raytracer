@@ -25,7 +25,6 @@ template<class T> struct Vec3 {
 			((double) rand()) / RAND_MAX,
 			((double) rand()) / RAND_MAX
 		);
-		t.normalize();
 		return t;
 	}
 
