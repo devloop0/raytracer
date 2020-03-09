@@ -86,10 +86,8 @@ ObjectType TriangleObject::object_type() const {
 Vec3f TriangleObject::normal(const Vec3f& p) const {
     // surface normal invariant wrt p
 	Vec3f edgeOne = vertexTwo_ - vertexOne_;
-    Vec3f edgeTwo = vertexThree_ - vertexOne_;
+	Vec3f edgeTwo = vertexThree_ - vertexOne_;
 	Vec3f temp = (edgeOne.cross(edgeTwo));
-	assert(temp.dot(edgeOne) == 0);
-	assert(temp.dot(edgeTwo) == 0);
 	temp.normalize();
 	return temp;
 }

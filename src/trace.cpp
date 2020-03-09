@@ -42,19 +42,21 @@ Rgb trace(const Ray& r, Scene& s, size_t bounce) {
 	}
 
 	// No intersection
-	bool inside = false;
 	if (closest_object == nullptr) {
 		if (bounce == 0)
 			return s.background_color();
 		else
 			return Rgb(0, 0, 0);
 	}
+
+	bool inside = false;
 	Vec3f hit_position = r.o + closest_distance * r.d;
 	Vec3f surface_normal = closest_object->normal(hit_position);
 	if (r.d.dot(surface_normal) > 0) {
 		surface_normal = -surface_normal;
 		inside = true;
 	}
+	if (closest_object->object_type() == ObjectType::TRIANGLE) inside = false;
 
 	Rgb color = Vec3f(0, 0, 0);
 	Vec3f nudged = hit_position + surface_normal * s.bias(); 
@@ -93,7 +95,7 @@ Rgb trace(const Ray& r, Scene& s, size_t bounce) {
 		rfl += Vec3f::random() * color_properties.glossiness;
 		rfl.normalize();
 		Ray reflected(nudged, rfl);
-		Rgb reflection_color = trace(reflected, s, bounce + 1) * color_properties.reflectivity;
+		Rgb reflection_color = trace(reflected, s, bounce + 1);
 
 		if (color_properties.transparency > 0) {
 			float ni = 1.0, nt = 1.1, nit = ni / nt;
@@ -107,8 +109,8 @@ Rgb trace(const Ray& r, Scene& s, size_t bounce) {
 
 			Ray refracted(hit_position - surface_normal * s.bias(), rfr);
 			Rgb refraction_color = trace(refracted, s, bounce + 1);
-			color = ((reflection_color * color_properties.reflectivity) + (refraction_color * color_properties.transparency
-				+ 0 * (1 - color_properties.transparency) * color_properties.diffuse_color));
+			color = (reflection_color * color_properties.reflectivity)
+				+ (refraction_color * color_properties.transparency);
 		}
 		else {
 			color += reflection_color * color_properties.reflectivity;
