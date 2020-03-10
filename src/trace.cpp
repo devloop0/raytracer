@@ -64,6 +64,7 @@ Rgb trace(const Ray& r, Scene& s, size_t bounce) {
 	for (const auto& l : s.lights()) {
 		// avoid back ray hitting the object itself by nudging. 
 		Vec3f light_direction = l.position - nudged;
+		float light_distance = light_direction.norm();
 		light_direction.normalize();
 		// now check if intersections in light direction
 		Ray back(
@@ -81,12 +82,24 @@ Rgb trace(const Ray& r, Scene& s, size_t bounce) {
 			}
 		}
 
-		if (closest_object->object_type() == ObjectType::SPHERE) {
-			color += l.color * l.intensity * (1 - shadow) * color_properties.diffuse_color
-				* std::max(0.0f, surface_normal.dot(light_direction));
+		light_distance = light_distance * light_distance;
+		float lambertian = std::max(0.0f, surface_normal.dot(light_direction));
+		float specular = 0;
+
+		if (lambertian > 0) {
+			Vec3f view_direction = hit_position - s.eye(),
+			      half_direction = light_direction + view_direction;
+			half_direction.normalize();
+			float specular_angle = std::max(half_direction.dot(surface_normal), 0.0f);
+			specular = std::pow(specular_angle, color_properties.shininess);
 		}
-		else
-			color += l.color * l.intensity * (1 - shadow) * color_properties.diffuse_color;
+
+		Vec3f color_linear = color_properties.diffuse_color * lambertian * l.color * l.intensity / light_distance
+			+ color_properties.specular_color * specular * l.color * l.intensity / light_distance;
+		color_linear.x = std::pow(color_linear.x, 1.0f / 2.2f);
+		color_linear.y = std::pow(color_linear.y, 1.0f / 2.2f);
+		color_linear.z = std::pow(color_linear.z, 1.0f / 2.2f);
+		color += color_linear * (1 - shadow);
 	}
 	color /= static_cast<float>(s.lights().size());
 
