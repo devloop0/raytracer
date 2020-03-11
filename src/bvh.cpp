@@ -46,8 +46,10 @@ void BVH::intersect(const Ray& r, const std::unique_ptr<BVHNode>& n, std::option
 		}
 	}
 	else {
-		std::optional<std::vector<float>> hits1 = n->left->bounding_box.intersect(r);
-		std::optional<std::vector<float>> hits2 = n->right->bounding_box.intersect(r);
+		std::optional<std::vector<float>> hits1
+			= n->left == nullptr ? std::nullopt : n->left->bounding_box.intersect(r);
+		std::optional<std::vector<float>> hits2
+			= n->right == nullptr ? std::nullopt : n->right->bounding_box.intersect(r);
 
 		if (hits1.has_value() && hits2.has_value()) {
 			if ((*hits1)[0] <= (*hits2)[0]) {

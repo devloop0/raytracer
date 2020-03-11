@@ -3,6 +3,7 @@
 #include <optional>
 #include <cmath>
 #include <algorithm>
+#include <omp.h>
 
 #include "vec3.h"
 
@@ -13,19 +14,39 @@ void render(Scene& s) {
 		height_step = 1.0f / static_cast<float>(s.screen_height()),
 		aspect_ratio = static_cast<float>(s.screen_width()) / static_cast<float>(s.screen_height()),
 		angle = tan(3.1415926535 * s.fov() / 360);
-	for (float h = 0; h < s.screen_height(); h++) {
-		for (float w = 0; w < s.screen_width(); w++) {
-			float ww = (2 * ((w + 0.5) * width_step) - 1) * aspect_ratio * angle; // apply ratio to normalize
-			float hh = (1 - 2 * ((h + 0.5) * height_step)) * angle; // negation distributed for pinhole camera
-			Vec3f dir(ww, hh, -1);
-			dir.normalize();
-			const Rgb& color = trace(Ray(s.eye(), dir), s); // shoot ray for each pixel of frame buffer 
-			s.image()(h, w) = color;
+	constexpr size_t BLOCK_SIZE = 8;
+
+	#pragma omp parallel for collapse(2) schedule(static, 1)
+	for (size_t h_outer = 0; h_outer < s.screen_height(); h_outer += BLOCK_SIZE) {
+		for (size_t w_outer = 0; w_outer < s.screen_width(); w_outer += BLOCK_SIZE) {
+			for (float h = h_outer;
+				h < std::min(static_cast<float>(h_outer + BLOCK_SIZE), static_cast<float>(s.screen_height()));
+				h++) {
+				for (float w = w_outer;
+					w < std::min(static_cast<float>(w_outer + BLOCK_SIZE), static_cast<float>(s.screen_width())); 
+					w++) {
+					// apply ratio to normalize
+					float ww = (2 * ((w + 0.5) * width_step) - 1) * aspect_ratio * angle;
+
+ 					// negation distributed for pinhole camera
+					float hh = (1 - 2 * ((h + 0.5) * height_step)) * angle;
+
+					Vec3f dir(ww, hh, -1);
+					dir.normalize();
+
+					// shoot ray for each pixel of frame buffer 
+					const Rgb& color = trace(Ray(s.eye(), dir), s); 
+					s.image()(h, w) = color;
+				}
+			}
 		}
 	}
 }
 
 Rgb trace(const Ray& r, Scene& s, size_t bounce) {
+	if (bounce >= s.max_bounce())
+		return Rgb(0, 0, 0);
+
 	// TODO: BVH
 	float closest_distance = INFINITY;
 	SceneObject* closest_object = nullptr;

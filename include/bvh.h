@@ -38,6 +38,7 @@ private:
 
 	std::unique_ptr<BVHNode> root_;
 	size_t buckets_;
+	const size_t MAX_NODES_PER_BUCKET = 2;
 };
 
 } // namespace raytracer
