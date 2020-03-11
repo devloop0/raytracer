@@ -39,6 +39,8 @@ public:
 	virtual Vec3f normal(const Vec3f& p) const = 0;
 
 	virtual const ColorProperties color_properties() const = 0;
+
+	virtual float surface_area() const = 0;
 };
 
 } // namespace raytracer

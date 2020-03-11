@@ -28,6 +28,8 @@ public:
 
 	const ColorProperties color_properties() const override;
 
+	float surface_area() const override;
+
 private:
 	Vec3f position_;
 	float radius_;

@@ -12,6 +12,7 @@ set(SOURCES
 	src/light.cpp
 	src/trace.cpp
 	src/triangle_object.cpp
+	src/bvh.cpp
 	src/main.cpp)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=c++17")

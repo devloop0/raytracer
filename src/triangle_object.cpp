@@ -96,4 +96,13 @@ const ColorProperties TriangleObject::color_properties() const {
     return color_properties_;
 }
 
+float TriangleObject::surface_area() const {
+	float edgeOne = (vertexTwo_ - vertexOne_).norm();
+	float edgeTwo = (vertexThree_ - vertexOne_).norm();
+    float edgeThree = (vertexThree_ - vertexTwo_).norm();
+
+    float semiperimeter = (edgeOne + edgeTwo + edgeThree)/2;
+
+    return std::sqrt(semiperimeter * (semiperimeter - edgeOne) * (semiperimeter - edgeTwo) * (semiperimeter - edgeThree));
+} 
 } // namespace raytracer

@@ -91,8 +91,7 @@ int main(int argc, char* argv[]) {
 	Scene s(generate_area_light(Light(Vec3f(-20, 20, 30), Rgb(1, 1, 1), 1000), 3, 3, 0.5),
 		std::move(objects),
 		Vec3f(0, 5, 0),
-		std::make_pair(3840, 2160), 30,
-		Rgb(1, 1, 1), 20
+		std::make_pair(1000, 800), 30
 	);
 	render(s);
 	s.image().write("output.ppm");

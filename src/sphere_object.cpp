@@ -59,4 +59,9 @@ const ColorProperties SphereObject::color_properties() const {
 	return color_properties_;
 }
 
+
+float SphereObject::surface_area() const {
+	return 4 * 3.14159265358979 * std::pow(radius_, 2);
+}
+
 } // namespace raytracer
