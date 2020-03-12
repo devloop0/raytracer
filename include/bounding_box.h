@@ -20,6 +20,8 @@ struct BoundingBox {
 
 	BoundingBox union_with(const BoundingBox& b) const;
 
+	BoundingBox union_with(const Vec3f& p) const;
+
 	float surface_area() const;
 
 	Vec3f bottom_left;

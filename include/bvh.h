@@ -34,11 +34,12 @@ private:
 
 	void intersect(const Ray& r, const std::unique_ptr<BVHNode>& n, std::optional<HitInfo>& hit_info) const;
 
-	std::unique_ptr<BVHNode> construct_BVHNode(std::vector<const SceneObject*> objects);
+	std::unique_ptr<BVHNode> construct_BVHNode(std::vector<const SceneObject*> objects,
+		size_t start_pos, size_t end_pos);
 
 	std::unique_ptr<BVHNode> root_;
 	size_t buckets_;
-	const size_t MAX_NODES_PER_BUCKET = 2;
+	const size_t MAX_NODES_PER_LEAF = 2;
 };
 
 } // namespace raytracer

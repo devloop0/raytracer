@@ -54,6 +54,18 @@ BoundingBox BoundingBox::union_with(const BoundingBox& b) const {
 	return BoundingBox(new_bl, new_tr);
 }
 
+BoundingBox BoundingBox::union_with(const Vec3f& p) const {
+	Vec3f new_bl, new_tr;
+	new_bl.x = std::min(bottom_left.x, p.x);
+	new_bl.y = std::min(bottom_left.y, p.y);
+	new_bl.z = std::min(bottom_left.z, p.z);
+
+	new_tr.x = std::max(top_right.x, p.x);
+	new_tr.y = std::max(top_right.y, p.y);
+	new_tr.z = std::max(top_right.z, p.z);
+	return BoundingBox(new_bl, new_tr);
+}
+
 
 float BoundingBox::surface_area() const {
 	// 2(xy+yz+zx)
