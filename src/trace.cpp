@@ -6,6 +6,7 @@
 #include <omp.h>
 
 #include "vec3.h"
+#include "bvh.h"
 
 namespace raytracer {
 
@@ -47,28 +48,17 @@ Rgb trace(const Ray& r, Scene& s, size_t bounce) {
 	if (bounce >= s.max_bounce())
 		return Rgb(0, 0, 0);
 
-	// TODO: BVH
-	float closest_distance = INFINITY;
-	SceneObject* closest_object = nullptr;
-	for (size_t i = 0; i < s.objects().size(); i++) {
-		const std::unique_ptr<SceneObject>& so = s.object(i);
-		std::optional<std::vector<float>> o = so->intersect(r);
-		if (o) {
-			const std::vector<float> v = *o;
-			if (closest_distance > v[0]) {
-				closest_distance = v[0];
-				closest_object = so.get();
-			}
-		}
-	}
+	std::optional<BVH::HitInfo> hit_info = s.intersect(r);
 
 	// No intersection
-	if (closest_object == nullptr) {
+	if (!hit_info.has_value()) {
 		if (bounce == 0)
 			return s.background_color();
 		else
 			return Rgb(0, 0, 0);
 	}
+	float closest_distance = hit_info->hits[0];
+	const SceneObject* closest_object = hit_info->object;
 
 	bool inside = false;
 	Vec3f hit_position = r.o + closest_distance * r.d;
@@ -94,14 +84,8 @@ Rgb trace(const Ray& r, Scene& s, size_t bounce) {
 		);
 		float shadow = 0;
 
-		// TODO: BVH
-		for (const std::unique_ptr<SceneObject>& so : s.objects()) {
-			if (so->intersect(back)) {
-				// occluded, so in shadow
-				shadow = 1;
-				break;
-			}
-		}
+		if (s.intersect(back))
+			shadow = 1;
 
 		light_distance = light_distance * light_distance;
 		float lambertian = std::max(0.0f, surface_normal.dot(light_direction));

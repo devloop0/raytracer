@@ -5,10 +5,12 @@
 #include <vector>
 #include <memory>
 
+#include "bvh.h"
 #include "vec3.h"
 #include "scene_object.h"
 #include "image.h"
 #include "light.h"
+#include "ray.h"
 
 namespace raytracer {
 
@@ -48,6 +50,8 @@ public:
 	float bias() const;
 
 	Rgb background_color() const;
+
+	std::optional<BVH::HitInfo> intersect(const Ray& r) const;
 private:
 	std::vector<Light> lights_;
 	std::vector<std::unique_ptr<SceneObject>> objects_;
@@ -59,6 +63,7 @@ private:
 	size_t max_bounce_;
 	float bias_;
 	Rgb background_color_;
+	BVH bvh_;
 };
 
 } // namespace raytracer

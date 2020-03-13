@@ -20,8 +20,8 @@ Scene::Scene(const std::vector<Light>& ls,
 	float b) :
 	lights_(ls), objects_(std::move(os)), eye_(e), screen_dims_(sd), fov_(f),
 	image_(Image(screen_width(), screen_height())), max_bounce_(m), bias_(b),
-	background_color_(bg) {
-
+	background_color_(bg), bvh_(BVH()) {
+	bvh_.construct(objects());
 }
 
 Scene::~Scene() {
@@ -76,6 +76,10 @@ float Scene::bias() const {
 
 Rgb Scene::background_color() const {
 	return background_color_;
+}
+
+std::optional<BVH::HitInfo> Scene::intersect(const Ray& r) const {
+	return bvh_.intersect(r);
 }
 
 } // namespace raytracer

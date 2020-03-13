@@ -15,13 +15,6 @@
 
 using namespace raytracer;
 
-// TODO:
-// 1. Reflection and refraction
-// 2. BVH
-// 3. Parallelize/Improve performance
-// 4. Triangle
-// 5. Soften shadows
-
 int main(int argc, char* argv[]) {
 	Scene s = balls();
 	render(s);

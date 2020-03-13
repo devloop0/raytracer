@@ -1,6 +1,7 @@
 #ifndef VEC3_H
 #define VEC3_H
 
+#include <cassert>
 #include <cmath>
 #include <iostream>
 
@@ -29,12 +30,14 @@ template<class T> struct Vec3 {
 	}
 
 	T operator [](size_t i) const {
+		assert (0 <= i && i <= 2);
 		if (i == 0) 
 			return x;
 		else if (i == 1)
 			return y;
 		else if (i == 2)
 			return z;
+		std::abort();
 	}
 
 	Vec3<T> operator*(const Vec3<T>& other) const {
