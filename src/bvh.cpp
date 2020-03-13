@@ -37,8 +37,10 @@ void BVH::intersect(const Ray& r, const std::unique_ptr<BVHNode>& n, std::option
 	// TODO
 	if (n->is_leaf) {
 		for (const auto& object : n->objects) {
+			// determine if object intersects with ray
 			std::optional<std::vector<float>> hits = object->intersect(r);
 			if (hits.has_value() && !hits->empty()) {
+				// if object is closer than closest in hit_info, update hit_info
 				float closest = (*hits)[0];
 				if (!hit_info.has_value() || closest < hit_info->hits[0]) {
 					hit_info->hits = *hits;
@@ -48,6 +50,7 @@ void BVH::intersect(const Ray& r, const std::unique_ptr<BVHNode>& n, std::option
 		}
 	}
 	else {
+		// intersect with left and right
 		std::optional<std::vector<float>> hits1
 			= n->left == nullptr ? std::nullopt : n->left->bounding_box.intersect(r);
 		std::optional<std::vector<float>> hits2
@@ -80,7 +83,8 @@ std::unique_ptr<BVH::BVHNode> BVH::construct_BVHNode(std::vector<const SceneObje
 	BoundingBox full_bounds = objects[start_pos]->bounding_box();
 	for (size_t i = start_pos; i < end_pos; i++)
 		full_bounds = full_bounds.union_with(objects[i]->bounding_box());
-
+	size_t dim = full_bounds.longest_axis();
+	size_t mid = (start_pos + end_pos) / 2
 	std::vector<std::pair<float, float>> axes_bounds = {
 		{ full_bounds.bottom_left.x, full_bounds.top_right.x },
 		{ full_bounds.bottom_left.y, full_bounds.top_right.y },
@@ -133,6 +137,7 @@ std::unique_ptr<BVH::BVHNode> BVH::construct_BVHNode(std::vector<const SceneObje
 			costs[i] = 0.125f + (count0 * b0.surface_area() + count1 * b1.surface_area()) / full_bounds.surface_area();
 		}
 
+		// find minimum cost partition
 		for (size_t i = 0; i < costs.size(); i++) {
 			float cost = costs[i];
 			if (bucket_split_min_cost > costs[i]) {
@@ -147,6 +152,15 @@ std::unique_ptr<BVH::BVHNode> BVH::construct_BVHNode(std::vector<const SceneObje
 	float leaf_cost = end_pos - start_pos;
 	if (end_pos - start_pos > MAX_NODES_PER_LEAF || bucket_split_min_cost < leaf_cost) {
 		// TODO
+		SceneObject *pmid = std::partition(&objects[start_pos], &objects[end_pos - 1] + 1,
+		[=](const SceneObject &obj) {
+			size_t bucket = buckets_ * full_bounds.relative_position(obj.position())[dim];
+			if (bucket == buckets_) {
+				bucket = buckets_ - 1;
+			}
+			return bucket <= min_cost_split_bucket;
+		});
+		mid = pmid - &objects[0];
 	}
 	else {
 		std::unique_ptr<BVHNode> bvh = std::make_unique<BVHNode>();

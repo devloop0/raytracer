@@ -22,6 +22,10 @@ struct BoundingBox {
 
 	BoundingBox union_with(const Vec3f& p) const;
 
+	size_t longest_axis() const; 
+
+	Vec3f relative_position(const Vec3f& p) const;
+
 	float surface_area() const;
 
 	Vec3f bottom_left;

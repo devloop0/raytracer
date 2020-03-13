@@ -76,4 +76,28 @@ float BoundingBox::surface_area() const {
 	return 2 * (length * width + width * height + height * length);
 } 
 
+size_t BoundingBox::longest_axis() const {
+	Vec3f diagonal = top_right - bottom_left;
+	if (diagonal.x > diagonal.y && diagonal.x > diagonal.z) 
+		return 0;
+	else if (diagonal.y > diagonal.z) 
+		return 1;
+	else 
+		return 2;
+}
+
+Vec3f BoundingBox::relative_position(const Vec3f& p) const {
+	Vec3 rp = p - bottom_left;
+	if (top_right.x > bottom_left.x) {
+		rp.x /= top_right.x - bottom_left.x;
+	}
+	if (top_right.y > bottom_left.y) {
+		rp.y /= top_right.y - bottom_left.y;
+	}
+	if (top_right.z > bottom_left.z) {
+		rp.z /= top_right.z - bottom_left.z;
+	}
+	return rp;
+} 
+
 } // namespace raytracer

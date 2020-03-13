@@ -28,6 +28,15 @@ template<class T> struct Vec3 {
 		return t;
 	}
 
+	T operator [](size_t i) const {
+		if (i == 0) 
+			return x;
+		else if (i == 1)
+			return y;
+		else if (i == 2)
+			return z;
+	}
+
 	Vec3<T> operator*(const Vec3<T>& other) const {
 		return Vec3<T>(
 			x * other.x,
