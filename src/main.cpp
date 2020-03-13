@@ -16,7 +16,7 @@
 using namespace raytracer;
 
 int main(int argc, char* argv[]) {
-	Scene s = balls();
+	Scene s = sample_scene1();
 	render(s);
 	s.image().write("output.ppm");
 

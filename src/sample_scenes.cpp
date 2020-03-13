@@ -27,7 +27,7 @@ const Rgb GRAY = Rgb(0.502, 0.502, 0.502),
 
 } // namespace
 
-Scene sample_scene1(size_t width, size_t height) {
+Scene sample_scene1(size_t width, size_t height, bool hq) {
 	std::vector<std::unique_ptr<SceneObject>> objects;
 	std::unique_ptr<SphereObject> s1 = std::make_unique<SphereObject>(Vec3f(-1.2, 2, -30),
 		1, ColorProperties{ .diffuse_color = GRAY, .specular_color = GRAY, .reflectivity = 0.5, .glossiness = 0.1 });
@@ -90,7 +90,8 @@ Scene sample_scene1(size_t width, size_t height) {
 	return Scene(generate_area_light(Light(Vec3f(-20, 20, 30), Rgb(1, 1, 1), 1000), 3, 3, 0.5),
 		std::move(objects),
 		Vec3f(0, 5, 0),
-		std::make_pair(width, height), 30
+		std::make_pair(width, height), 30,
+		Rgb(1, 1, 1), hq ? 20 : 5
 	);
 }
 
