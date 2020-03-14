@@ -21,8 +21,6 @@ struct ColorProperties {
 	Rgb specular_color = Rgb(0, 0, 0);
 	float reflectivity = 0;
 	float transparency = 0;
-	float glossiness = 0;
-	float transparent_glossiness = 0;
 	float shininess = 16.0;
 };
 

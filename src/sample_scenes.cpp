@@ -30,9 +30,9 @@ const Rgb GRAY = Rgb(0.502, 0.502, 0.502),
 Scene sample_scene1(size_t width, size_t height, bool hq) {
 	std::vector<std::unique_ptr<SceneObject>> objects;
 	std::unique_ptr<SphereObject> s1 = std::make_unique<SphereObject>(Vec3f(-1.2, 2, -30),
-		1, ColorProperties{ .diffuse_color = GRAY, .specular_color = GRAY, .reflectivity = 0.5, .glossiness = 0.1 });
+		1, ColorProperties{ .diffuse_color = GRAY, .specular_color = GRAY, .reflectivity = 0.5 });
 	std::unique_ptr<SphereObject> s1_2 = std::make_unique<SphereObject>(Vec3f(1.2, 2, -30),
-		1, ColorProperties{ .diffuse_color = GRAY, .specular_color = GRAY, .reflectivity = 0.5, .glossiness = 0.1 });
+		1, ColorProperties{ .diffuse_color = GRAY, .specular_color = GRAY, .reflectivity = 0.5 });
 
 	std::unique_ptr<SphereObject> s2 = std::make_unique<SphereObject>(Vec3f(0, -10000, -20),
 		10000, ColorProperties{ .diffuse_color = Rgb(1, 0, 0) });

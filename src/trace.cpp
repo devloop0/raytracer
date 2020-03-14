@@ -110,19 +110,17 @@ Rgb trace(const Ray& r, Scene& s, size_t bounce) {
 
 	if ((color_properties.reflectivity > 0 || color_properties.transparency > 0) && bounce < s.max_bounce()) {
 		Vec3f rfl = reflect(r.d, surface_normal);
-		rfl += Vec3f::random() * color_properties.glossiness;
 		rfl.normalize();
 		Ray reflected(nudged, rfl);
 		Rgb reflection_color = trace(reflected, s, bounce + 1);
 
 		if (color_properties.transparency > 0) {
-			float ni = 1.0, nt = 1.1, nit = ni / nt;
-			if (inside) nit = 1 / nit;
+			float eta = 1.0 / 1.1;
+			if (inside) eta = 1 / eta;
 			
 			float cosi = -surface_normal.dot(r.d),
-				k = 1 - nit * nit * (1 - cosi * cosi);
-			Vec3f rfr = r.d * nit + surface_normal * (nit * cosi - std::sqrt(k));
-			rfr += Vec3f::random() * color_properties.transparent_glossiness;
+				k = 1 - eta * eta * (1 - cosi * cosi);
+			Vec3f rfr = r.d * eta + surface_normal * (eta * cosi - std::sqrt(k));
 			rfr.normalize();
 
 			Ray refracted(hit_position - surface_normal * s.bias(), rfr);
