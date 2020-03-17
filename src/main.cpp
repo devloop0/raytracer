@@ -12,13 +12,17 @@
 #include "scene_object.h"
 #include "bvh.h"
 #include "sample_scenes.h"
+#include <iostream>
 
 using namespace raytracer;
 
 int main(int argc, char* argv[]) {
-	Scene s = balls(1920, 1080);
-	render(s);
-	s.image().write("output.ppm");
+	for (size_t i = 0; i <= 3600; i += 400) {
+		Scene s = balls(1920, 1080, i);
+		render(s);
+		s.image().write("output" + std::to_string(i/400) + ".ppm");
+		std::cout << std::to_string(i/400) << std::endl;
+	}
 
 	return 0;
 }

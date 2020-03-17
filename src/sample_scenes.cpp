@@ -95,7 +95,7 @@ Scene sample_scene1(size_t width, size_t height, bool hq) {
 	);
 }
 
-Scene balls(size_t width, size_t height) {
+Scene balls(size_t width, size_t height, size_t num_objects) {
 	std::vector<std::unique_ptr<SceneObject>> objects;
 
 	std::unique_ptr<SphereObject> floor = std::make_unique<SphereObject>(Vec3f(0, -10000, -20),
@@ -111,6 +111,9 @@ Scene balls(size_t width, size_t height) {
 					.reflectivity = 0.5, .transparency = (z == -20 ? 0.9f : 0.0f) });
 				objects.push_back(std::move(ball));
 			}
+		}
+		if (counter == num_objects) {
+			break;
 		}
 	}
 
