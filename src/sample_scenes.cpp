@@ -97,7 +97,7 @@ Scene sample_scene1(size_t width, size_t height, bool hq) {
 
 Scene balls(size_t width, size_t height, size_t num_objects) {
 	std::vector<std::unique_ptr<SceneObject>> objects;
-
+	bool screenshot_time = false;
 	std::unique_ptr<SphereObject> floor = std::make_unique<SphereObject>(Vec3f(0, -10000, -20),
 		10000, ColorProperties{ .diffuse_color = VIOLET_FLOWER });
 	objects.push_back(std::move(floor));
@@ -105,16 +105,19 @@ Scene balls(size_t width, size_t height, size_t num_objects) {
 	for (float z = -100; z <= -20; z += 4) {
 		for (float y = 3; y <= 20; y += (z == -20 ? 6 : 2)) {
 			for (float x = -20; x <= 20; x += (z == -20 ? 4 : 2)) {
+				if (counter == num_objects) {
+					screenshot_time = true;	
+					break;
+				}
 				Rgb current = counter++ % 2 == 0 ? GRASS : TOPAZ;
 				std::unique_ptr<SphereObject> ball = std::make_unique<SphereObject>(Vec3f(x, y, z),
 					z == -20 ? 1.8 : 0.8, ColorProperties{ .diffuse_color = current, .specular_color = current,
 					.reflectivity = 0.5, .transparency = (z == -20 ? 0.9f : 0.0f) });
 				objects.push_back(std::move(ball));
 			}
+			if (screenshot_time) break;
 		}
-		if (counter == num_objects) {
-			break;
-		}
+		if (screenshot_time) break;
 	}
 
 	return Scene(generate_area_light(Light(Vec3f(-60, 60, 40), Rgb(1, 1, 1), 1000), 3, 3, 0.5),
