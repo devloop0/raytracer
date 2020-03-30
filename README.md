@@ -27,7 +27,17 @@ Our BVH also supports debug mode (lines 31-55). We wrote a visualize method whic
 ## Example Assets
 ![Assignment 3, but Dark Mode and on Crack](img/scene1.png)
 
+This 4K image, rendered entirely by our raytracer (20 ray bounces), showcases some of its most impressive functionality.
+
+Note that the center sphere looks like Spiderman because it is a transparent sphere in front of two reflective spheres.
+
+How might we confirm this? The blue and green spheres are reflective, and if one zooms into them close enough, one can see the entire scene in its reflection(!) 
+
+Finally, note the soft shadows casted on the floor, which were created by arranging point lights in a rectangular fashion to simulate area lights.
+
 ![Balls!](img/scene2.png)
+
+This scene contains almost 2000 balls! The inspiration behind this work was to battle test our optimizations. Using quad core (8 logical thread) Intel i7-7700HQ (with 16 GB of RAM) and a BVH, we were able to render this scene in under 15 minutes. Note that this image is 1920x1080. For comparison, when we rendered this scene to a 1000x800 image with no parallelization and no BVH, it took almost 1.5 hours! The spheres alternate between grass and topaz colors, and only the front array of spheres is nearly transparent. 
 
 ## Future Work
 With more time, we would’ve liked to work on further optimizations (like SIMD processing mentioned by Prof. Kayvon). Additionally, we’d like to explore other image formats less inefficient than PPM. 
