@@ -24,7 +24,10 @@ The Surface Area Heuristic answers the question “which partition is best for r
 
 Our BVH also supports debug mode (lines 31-55). We wrote a visualize method which is called when the debug flag is toggled. The visualize method traverses the BVH so the user can verify the integrity of the generated hierarchy. 
 
+## Example Assets
+![Assignment 3, but Dark Mode and on Crack](img/scene1.png)
 
+![Balls!](img/scene2.png)
 
 ## Future Work
 With more time, we would’ve liked to work on further optimizations (like SIMD processing mentioned by Prof. Kayvon). Additionally, we’d like to explore other image formats less inefficient than PPM. 
