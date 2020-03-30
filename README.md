@@ -10,7 +10,7 @@ With respect to materials/lighting, our ray tracer supports:
 
 * hard and soft shadows;
 * reflections and refractions;
-* materials (transparent, diffuse).
+* materials (transparent, diffuse)
 
 With respect to optimization, our ray tracer utilizes: 
 
